@@ -1,37 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "rutas/RutasCgrafos.cpp"
-
-
- /* std::vector<int> reordenar(std::vector<std::vector<int>>& g) {  
-        int n = g.size();  
-        std::vector<int> orden(n);  
-        for (int i = 0; i < n; ++i) {  
-            orden[i] = i; 
-        }  
-         
-        for (int i = 0; i < n - 1; ++i) {  
-            for (int j = 0; j < n - i - 1; ++j) {  
-                if (g[orden[j]].size() < g[orden[j + 1]].size()) {    
-                    std::swap(orden[j], orden[j + 1]);  
-                }  
-            }  
-        }  
-        return orden;  
-    }
-
-    bool WelshPowell(std::vector<std::vector<int>>&g, int cantColores,std::vector<int> colores) {
-		std::vector<int> orden = reordenar(g);
-		int n = g.size();
-		colores[orden[0]] = 0; // Asignar el primer color al primer nodo en el orden
-        for (int i = 0; i < n-1; i++) {
-            //for (int c : g[i]) {
-              //  if(i==)
-          //}
-        }
-
-        return false;
-    }*/
+#include "../Backend/rutas/RutasCgrafos.cpp"
 
 int main() {
     Grafo g(5);
@@ -54,7 +23,7 @@ int main() {
     app.port(18080).multithreaded().run();
 
     return 0;
-    std::vector<int>colores2(g.tamano(),-1);
+    //std::vector<int>colores2(g.tamano(),-1);
 	//std::vector<int> orden = reordenar(adj);
 	
     /*std::cout << "Orden:\n";

@@ -1,9 +1,7 @@
-
 #include <iostream>
 #include "../CGrafos.hpp"
 #include "../crow_all.h"
-
- 
+#include "../Grafo.hpp"
 
 void registrarRutas(crow::SimpleApp& app, CGrafos& c, Grafo& g) {
     CROW_ROUTE(app, "/")([]() {
