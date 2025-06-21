@@ -1,49 +1,75 @@
-#include "CGrafos.hpp"
-CGrafos::CGrafos()
-{
-}
-bool CGrafos::btColor(std::vector<std::vector<int>> &g, std::vector<int> &colores, int nodo, int cantColores)
-{
-    if (nodo == g.size()) return true;
+#include "CGrafos.hpp" 
+#include <iostream>
+#include <vector>
+#include <stack>
 
-    for (int color = 1; color <= cantColores; color++) {
+CGrafos::CGrafos(){}
+
+bool CGrafos::Coloring(std::vector<std::vector<int>>& g, int nodo, std::vector<int>& colores, int colorIntento) {
+    
+    for (int vecino = 0; vecino < g.size(); ++vecino) {
+        
+        if (g[nodo][vecino] == 1 && colores[vecino] == colorIntento) {
+            return false; 
+        }
+    }
+    return true; 
+}
+
+bool CGrafos::btColor(std::vector<std::vector<int>>& g, std::vector<int>& colores, int nodo, int cantColores) {
+
+    if (nodo == g.size()) {
+        return true; 
+    }
+  
+    for (int color = 0; color < cantColores; color++) { 
+        
         if (Coloring(g, nodo, colores, color)) {
+          
             colores[nodo] = color;
+      
             if (btColor(g, colores, nodo + 1, cantColores)) {
-                return true;
+                return true; 
             }
-            colores[nodo] = -1; // backtrack
+       
+            colores[nodo] = -1; 
         }
     }
-    return false; // no color válido
+
+    return false; 
 }
 
-bool CGrafos::Coloring(std::vector<std::vector<int>>&g,int nodo, std::vector<int>& colores, int color) {
-    for (int vecino : g[nodo]) {        
-            if (colores[vecino] == color) {
-                return false; 
-            }	
-    }
-    return true;
-}
-
-
-
-
-bool CGrafos::BtPropio(std::vector<std::vector<int>>& g, std::vector<int>& colores2, int cantColores)  {
-    for(int v=0; v<g.size(); v++){
-        for(int color = 0; color<cantColores;color++){
-            if(Coloring(g,v,colores2,color)){
-                colores2[v]=color;
+bool CGrafos::BtPropio(std::vector<std::vector<int>>& g, std::vector<int>& colores, int cantColores) {
+    colores.assign(g.size(), -1);
+    std::stack<int> s;
+    s.push(0);
+    int nodoActual = 0;
+    bool colorEncontrado = false;
+    while(!s.empty()){
+        nodoActual = s.top();
+        if(nodoActual == g.size()) {
+            return true; 
+        }
+        for(int color = 0; color < cantColores; color++) {
+            if(Coloring(g, nodoActual, colores, color)) {
+                colores[nodoActual] = color;
+                s.push(nodoActual + 1);
+                colorEncontrado = true;
+                break; 
             }
         }
-    }
-    std::cout<<"Validando colores2 \n"<<std::endl;
-    for(int c: colores2){
-        //std::cout<<"Color: "<<c<<std::endl;
-        if(c==-1){
-            return false;
+
+        if(!colorEncontrado) {
+            colores[nodoActual] = -1; 
+            if(s.empty()) {
+                s.pop();
+                return false;
+            }
+           
+        } else {
+            colorEncontrado = false; 
         }
+
     }
-    return true;
-} 
+     return false;
+}

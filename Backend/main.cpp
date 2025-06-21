@@ -3,22 +3,11 @@
 #include "../Backend/rutas/RutasCgrafos.cpp"
 
 int main() {
-    Grafo g(5);
-    CGrafos c;
-
-    // Aristas de ejemplo
-    g.agregarArista(0, 1);
-    g.agregarArista(0, 4);
-    g.agregarArista(1, 2);
-    g.agregarArista(1, 3);
-    g.agregarArista(1, 4);
-    g.agregarArista(2, 3);
-    g.agregarArista(3, 4);
 
     crow::SimpleApp app;
 
     // Rutas separadas
-    registrarRutas(app, c, g);
+    registrarRutas(app);
 
     app.port(18080).multithreaded().run();
 

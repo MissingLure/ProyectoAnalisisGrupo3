@@ -1,0 +1,73 @@
+# Compiled object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Build directories
+/build/
+bin/
+Debug/
+debug/
+Release/
+release/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+
+
+# Visual Studio
+*.sln
+*.vcxproj*
+*.vcproj*
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj.filters
+*.user
+*.aps
+*.pch
+*.vs/
+ipch/
+*.dbmdl
+
+# Code::Blocks
+*.depend
+*.layout
+
+# CLion
+.idea/
+cmake-build-*/
+
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# OneDrive
+~$*
