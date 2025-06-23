@@ -21,9 +21,14 @@
 {#if !salir}
   <div
     transition:fly={{ x: 0, y: 0, duration: 600 }}
-    class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-700 via-black to-blue-500 text-white"
+    class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white via-red-400 to-blue-500 text-white"
   >
-    <span class="text-7xl mb-6">🎮</span>
+    <img
+    src="/logo.png"
+    alt="Logo Unitec"
+    class="w-40 h-auto mb-8 object-contain rounded-xl shadow-xl "
+    style="background: none;"
+  />
     <h1 class="text-5xl font-bold mb-4">Proyecto de Analisis de Algoritmos - Grupo 3</h1>
     <p class="mb-8 text-lg">Set Cover, Coloración de Grafos y Problema de Viajante de Comercio</p>
     <button

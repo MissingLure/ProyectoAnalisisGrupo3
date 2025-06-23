@@ -1,0 +1,16 @@
+# Compilados y ejecutables
+*.exe
+*.out
+*.obj
+*.o
+
+# Carpetas de configuración de VS/VSCode
+.vs/
+.vscode/
+
+# Dependencias locales (si no quieres subir vcpkg)
+vcpkg/
+
+# Archivos de respaldo/temporales
+*.log
+*.tmp
