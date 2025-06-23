@@ -26,6 +26,8 @@ void registrarRutas(crow::SimpleApp &app)
 
     json points = req_body["points"];
     json adj_matriz = req_body["matriz"];
+    json modo = req_body["modo"];
+    
     int N = points.size();
     Grafos g(N);
     vector<vector<int>> matriz(N, vector<int>(N));
@@ -42,8 +44,17 @@ void registrarRutas(crow::SimpleApp &app)
     }
 
     auto start = high_resolution_clock::now();
+    if (modo == "Aproximado") {
+        g.TSPPropio(matriz);
+    } else if (modo == "Comunidad") {
+        g.TSPComunidad(matriz);
+    } else {
+        return crow::response(400, "Invalid mode. Use 'propio' or 'comunidad'.");
+    }
     vector<int> ruta = g.TSPComunidad(matriz);
     auto end = high_resolution_clock::now();
+
+
     double totalCost = 0;
     if (ruta.size() > 1) {
         for (int i = 0; i < ruta.size() - 1; ++i) {

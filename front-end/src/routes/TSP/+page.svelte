@@ -23,6 +23,7 @@
 	let distanciaTotal: number | null = null;
 	let ruta: number[] = [];
 	let rutaText: string = '';
+	let opSelected = 'Aproximado';
 
 	// Calcular las distancias proceso y codigo investigado
 	function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -215,6 +216,36 @@
 				<p class="mb-2 text-left text-xl font-semibold">Tiempo: {tiempo}</p>
 				<p class="mb-2 text-left text-xl font-semibold">Distancia Total: {distanciaTotal}</p>
 			</div>
+
+			<button
+				on:click={() => (opSelected = opSelected === 'Aproximado' ? 'Comunidad' : 'Aproximado')}
+				class="relative inline-flex h-10 w-52 cursor-pointer items-center rounded-full bg-white"
+				role="switch"
+				aria-checked={opSelected === 'Aproximado'}
+			>
+				<span
+					class="w-25 absolute top-1 flex h-8 items-center justify-center rounded-full text-white transition-transform duration-200 ease-in-out"
+					class:translate-x-full={opSelected === 'Comunidad'}
+					class:bg-green-600={opSelected === 'Aproximado'}
+					class:bg-[#86B828]={opSelected === 'Comunidad'}
+				>
+					{opSelected === 'Aproximado' ? 'Aproximado' : 'Comunidad'}
+				</span>
+				<span
+					class="w-22 absolute left-1 top-1 flex h-8 items-center justify-center rounded-full text-gray-700 transition-opacity duration-200 ease-in-out"
+					class:opacity-0={opSelected === 'Aproximado'}
+					class:opacity-100={opSelected === 'Comunidad'}
+				>
+					Aproximado
+				</span>
+				<span
+					class="w-22 absolute right-1 top-1 flex h-8 items-center justify-center rounded-full text-gray-700 transition-opacity duration-200 ease-in-out"
+					class:opacity-0={opSelected === 'Comunidad'}
+					class:opacity-100={opSelected === 'Aproximado'}
+				>
+					Comunidad
+				</span>
+			</button>
 		</div>
 	</div>
 </div>

@@ -1,7 +1,8 @@
 import axios from "./axiosInstance"
 /**
  * @param {{ points: { lat: number; lng: number }[],
- *          matriz: number[][]  }} values
+ *          matriz: number[][],
+ *          modo: string,}} values
  */
 const postTSP = async (values) => {
     try {
