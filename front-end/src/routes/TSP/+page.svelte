@@ -3,10 +3,12 @@
 	import { onMount } from 'svelte';
 	import type * as L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
+	import axios from 'axios';
+	import postTSP from './TSP';
 
 	const MAX_DOTS = 15;
 
-	let cant_dots = 2; //cantidad de marcas
+	let cant_dots = 3; //cantidad de marcas
 	let mapa: L.Map; //Para el mapa en si
 	let dots: L.CircleMarker[] = []; //Lista de marcas
 	let pathLine: L.Polyline | null = null;
@@ -19,6 +21,8 @@
 	let tiempo: number | null = null;
 	let camino: { lat: number; lng: number }[] = [];
 	let distanciaTotal: number | null = null;
+	let ruta: number[] = [];
+	let rutaText: string = '';
 
 	// Calcular las distancias proceso y codigo investigado
 	function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -80,14 +84,23 @@
 			const lat = southwest.lat + Math.random() * (northeast.lat - southwest.lat);
 			const lng = southwest.lng + Math.random() * (northeast.lng - southwest.lng);
 			generatedPoints.push({ lat, lng });
-
-			//Agrega los puntos al mapa
-			const marker = L.circleMarker([lat, lng], {
-				radius: 6,
-				color: 'green',
-				fillColor: '#7ca982',
-				fillOpacity: 0.5
-			}).addTo(mapa);
+			let marker: L.CircleMarker;
+			if (i == 0) {
+				marker = L.circleMarker([lat, lng], {
+					radius: 6,
+					color: 'Red',
+					fillColor: 'Red',
+					fillOpacity: 0.5
+				}).addTo(mapa);
+			} else {
+				//Agrega los puntos al mapa
+				marker = L.circleMarker([lat, lng], {
+					radius: 6,
+					color: 'green',
+					fillColor: '#7ca982',
+					fillOpacity: 0.5
+				}).addTo(mapa);
+			}
 
 			//ID del punto solo para verlo en el mapa
 			marker.bindPopup(`Punto ${i}`);
@@ -99,36 +112,32 @@
 		TSP_Backend(generatedPoints, matriz);
 	}
 
-	async function TSP_Backend(points: { lat: number; lng: number }[], adjacencyMatrix: number[][]) {
+	async function TSP_Backend(points: { lat: number; lng: number }[], matriz: number[][]) {
 		try {
-			const response = await fetch('http://localhost:18080/solve-tsp', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ points, adjacencyMatrix })
-			});
+			const response = await axios.post('/solve-tsp', { points, matriz });
 
-			if (!response.ok) {
-				console.log(Error(`HTTP error! status: ${response.status}`));
-			}
-
-			const data = await response.json();
+			const data = response.data;
+			console.log('Received data from backend:', data);
 			tiempo = data.time;
+			distanciaTotal = data.distance;
 			camino = data.path;
-			distanciaTotal = data.distancia;
+			ruta = data.path_indices;
+			rutaText = '';
 
-			// Dibuja el camino
 			if (mapa && camino.length > 1) {
 				if (pathLine) {
 					mapa.removeLayer(pathLine);
 				}
+
 				const latlngs = camino.map((p) => L.latLng(p.lat, p.lng));
-
 				latlngs.push(latlngs[0]);
+				pathLine = L.polyline(latlngs, { color: 'red', weight: 3 }).addTo(mapa);
 
-				pathLine = L.polyline(latlngs, { color: 'red', weight: 3, dashArray: '5, 10' }).addTo(mapa);
-				//mapa.fitBounds(pathLine.getBounds()); // Adjust map view to fit the path
+				for (let i = 0; i < dots.length; i++) {
+					dots[i].bindPopup(`Punto ${i} - Peso: ${Math.round(matriz[ruta[i]][ruta[i + 1]])}`);
+					rutaText += `${ruta[i]} -> `;
+				}
+				rutaText += `0`;
 			}
 		} catch (error) {
 			console.error('Error:', error);
@@ -170,8 +179,8 @@
 		//Asegura el maximo y el minimo
 		if (cant_dots > MAX_DOTS) {
 			cant_dots = MAX_DOTS;
-		} else if (cant_dots < 2) {
-			cant_dots = 2;
+		} else if (cant_dots < 3) {
+			cant_dots = 3;
 		}
 	}
 </script>
@@ -202,8 +211,9 @@
 			<button on:click={() => generateDots(cant_dots)} class="boton"> Generar Puntos </button>
 
 			<div>
-				<p class="mb-2 text-right text-xl font-semibold">Camino: {camino}</p>
-				<p class="align mb-2 text-xl font-semibold">Tiempo: {tiempo}</p>
+				<p class="mb-2 text-left text-xl font-semibold">Camino: {rutaText}</p>
+				<p class="mb-2 text-left text-xl font-semibold">Tiempo: {tiempo}</p>
+				<p class="mb-2 text-left text-xl font-semibold">Distancia Total: {distanciaTotal}</p>
 			</div>
 		</div>
 	</div>
