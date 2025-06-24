@@ -1,63 +1,83 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import postCgrafo from '../../APIs/Cgrafos';
-  const examNames = ['Matemáticas', 'Física', 'Biología'];
-  const examColors = ['#3b82f6', '#22c55e', '#ef4444'];
+  import { fly } from 'svelte/transition';
+  import cgrafo from '../../APIs/Cgrafos';
+
+  const examNames = [
+    'Tipo A', 'Tipo B', 'Tipo C', 'Tipo D', 'Tipo E',
+    'Tipo F', 'Tipo G', 'Tipo H', 'Tipo I', 'Tipo J'
+  ];
+
+  const examColors = [
+    '#3b82f6', '#22c55e', '#ef4444', '#f59e0b', '#8b5cf6',
+    '#14b8a6', '#e11d48', '#0ea5e9', '#7c3aed', '#a16207'
+  ];
 
   let showModal = false;
   let numEstudiantes = 0;
-  let sillasPorMesa = 5;
-  let mesasPorFila = 4;
-  let numC = 5;
-  let aula: number[][][] = [];
+  const sillasPorMesa = 5;
+  const mesasPorFila = 4;
+  let numC = 10;
+  let algoritmo: 'btColor' | 'btPropio' = 'btColor';
 
-  function generarAula() {
+  // Reactividad para el switch
+  let algoritmoChecked = false;
+  $: algoritmo = algoritmoChecked ? 'btPropio' : 'btColor';
+
+  let aula: number[][][] = [];
+  let tiempoEjecucion: number | null = null;
+
+  const generarAula = async () => {
+    const algoritmo = algoritmoChecked ? 'btPropio' : 'btColor';
     const values = {
       numEstudiantes,
-      numC
+      numC,
+      algoritmo
     };
-    const fetchColores = async () => {
-      try {
-        const response = await postCgrafo(values);
-        if (response && response.colores) {
-          console.log('Colores obtenidos del servidor:', response.colores);
-          return response.colores;
-        } else {
-          console.error('Error al obtener los colores del servidor');
-          return examColors; // Fallback to default colors
+
+    try {
+      const response = await cgrafo.postCgrafo(values);
+      console.log("Respuesta del servidor:", response);
+
+      if (response && Array.isArray(response.result)) {
+        const colores: number[] = response.result;
+        tiempoEjecucion = response.tiempo;
+        const totalMesas = Math.ceil(numEstudiantes / sillasPorMesa);
+        const numFilas = Math.ceil(totalMesas / mesasPorFila);
+
+        aula = [];
+        let index = 0;
+
+        for (let fila = 0; fila < numFilas; fila++) {
+          let filaMesas: number[][] = [];
+
+          for (let mesa = 0; mesa < mesasPorFila; mesa++) {
+            if (index >= colores.length) break;
+
+            let mesaSillas: number[] = [];
+            for (let silla = 0; silla < sillasPorMesa; silla++) {
+              if (index >= colores.length) break;
+              mesaSillas.push(colores[index]);
+              index++;
+            }
+
+            filaMesas.push(mesaSillas);
+          }
+
+          aula.push(filaMesas);
         }
-      } catch (error) {
-        console.error('Error al hacer la solicitud:', error);
-        return examColors; // Fallback to default colors
+
+      } else {
+        console.error('Error: la respuesta del servidor no es válida.');
+        alert('No se pudo generar el aula con esa cantidad de colores.');
       }
-    };
-    const totalMesas = Math.ceil(numEstudiantes / sillasPorMesa);
-    const numFilas = Math.ceil(totalMesas / mesasPorFila);
-    
-    aula = [];
-    let estudiantesAsignados = 0;
-     
-    for (let fila = 0; fila < numFilas; fila++) {
-      let filaMesas: number[][] = [];
-
-      for (let mesa = 0; mesa < mesasPorFila; mesa++) {
-        if (estudiantesAsignados >= numEstudiantes) break;
-
-        let mesaSillas: number[] = [];
-        for (let silla = 0; silla < sillasPorMesa; silla++) {
-          if (estudiantesAsignados >= numEstudiantes) break;
-          mesaSillas.push(Math.floor(Math.random() * examNames.length));
-          estudiantesAsignados++;
-        }
-
-        filaMesas.push(mesaSillas);
-      }
-
-      aula.push(filaMesas);
+    } catch (error) {
+      console.error('Error al hacer la solicitud:', error);
+      alert('Ocurrió un error al contactar al servidor.');
     }
 
     showModal = false;
-  }
+  };
 
   onMount(generarAula);
 </script>
@@ -74,15 +94,16 @@
 
   .blackboard {
     width: 100%;
-    height: 80px;
     background-color: #1f2937;
     color: white;
     font-size: 1.2rem;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     border-radius: 12px;
     margin-bottom: 2rem;
+    padding: 1rem;
   }
 
   .grid {
@@ -121,7 +142,6 @@
   .silla {
     width: 40px;
     height: 40px;
-    background-color: #dc2626;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -136,13 +156,6 @@
     font-size: 0.5rem;
   }
 
-  footer {
-    margin-top: 2rem;
-    font-size: 0.8rem;
-    color: #6b7280;
-  }
-
-  /* Modal styles */
   .modal-background {
     position: fixed;
     top: 0;
@@ -175,7 +188,14 @@
 
   .modal-actions {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-actions .row-buttons {
+    display: flex;
     justify-content: space-between;
+    width: 100%;
   }
 
   .modal-actions button {
@@ -195,6 +215,51 @@
     color: white;
   }
 
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 30px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #2563eb;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(30px);
+  }
+
   .config-button {
     margin-top: 1rem;
     padding: 0.5rem 1rem;
@@ -202,25 +267,43 @@
     background-color: #2563eb;
     color: white;
     border: none;
+    margin-bottom: 1rem;
+  }
+
+  .alg-label {
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+    text-align: center;
   }
 </style>
 
 <div class="classroom">
-  <div class="blackboard">🧑‍🏫 Aula de Exámenes - Estilo Realista</div>
+  <div class="blackboard">
+    <div>Coloración de Grafos</div>
+    {#if tiempoEjecucion !== null}
+      <div style="font-size: 0.9rem; margin-top: 4px;">
+        Tiempo de ejecución: {tiempoEjecucion} nanosegundos
+      </div>
+    {/if}
+  </div>
 
   <button class="config-button" on:click={() => showModal = true}>
-    Configurar Aula
+    Cantidad de Estudiantes
   </button>
 
   <div class="grid">
-    {#each aula as fila}
-      <div class="row">
-        {#each fila as mesa}
-          <div class="table-block">
+    {#each aula as fila, filaIndex (filaIndex)}
+      <div class="row" transition:fly="{{ y: 30, delay: filaIndex * 300 }}">
+        {#each fila as mesa, mesaIndex (mesaIndex)}
+          <div class="table-block" transition:fly="{{ y: 20, delay: mesaIndex * 400 }}">
             <div class="mesa"></div>
             <div class="sillas">
-              {#each mesa as color}
-                <div class="silla" style="background-color: {examColors[color]}">
+              {#each mesa as color, index (index)}
+                <div
+                  class="silla"
+                  style="background-color: {examColors[color]}"
+                  transition:fly="{{ y: 10, duration: 300, delay: index * 600 }}"
+                >
                   👨‍🎓
                   <span>{examNames[color]}</span>
                 </div>
@@ -240,22 +323,21 @@
           Total de estudiantes:
           <input type="number" bind:value={numEstudiantes} min="1" />
         </label>
-        <label>
-          Sillas por mesa:
-          <input type="number" bind:value={sillasPorMesa} min="1" />
-        </label>
-        <label>
-          Mesas por fila:
-          <input type="number" bind:value={mesasPorFila} min="1" />
-        </label>
-
         <div class="modal-actions">
-          <button on:click={generarAula}>Aceptar</button>
-          <button on:click={() => showModal = false}>Cancelar</button>
+          <div class="row-buttons">
+            <button on:click={generarAula}>Aceptar</button>
+            <button on:click={() => showModal = false}>Cancelar</button>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" bind:checked={algoritmoChecked} />
+            <span class="slider"></span>
+          </label>
+          <div class="alg-label">
+            Algoritmo: {algoritmo === 'btPropio' ? 'Propio' : 'Comunidad'}
+          </div>
         </div>
       </div>
     </div>
   {/if}
-
-  <footer>Grupo 3 - Análisis de Algoritmos Q2 2025</footer>
 </div>
