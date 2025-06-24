@@ -1,0 +1,21 @@
+# Compilados
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+.vscode/
+
+# Archivos temporales
+*.log
+*.tmp
+*.cache
+*.swp
+*.swo
+
+vcpkg/

@@ -4,7 +4,7 @@
 #include <vector>
 #include <chrono>
 
-void registrarRutas(crow::SimpleApp &app)
+void registrarRutasSetCover(crow::SimpleApp &app)
 {
     // Aproximado
     CROW_ROUTE(app, "/api/SetCoverAproximado").methods("POST"_method)([](const crow::request &req)

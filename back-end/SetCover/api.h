@@ -1,4 +1,4 @@
 #pragma once
-#include "crow_all.h"
+#include "../crow_all.h"
 
-void registrarRutas(crow::SimpleApp& app);
+void registrarRutasSetCover(crow::SimpleApp& app);
