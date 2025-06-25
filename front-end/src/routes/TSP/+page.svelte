@@ -1,7 +1,7 @@
 <script lang="ts">
 	//imports para el mapa
 	import { onMount } from 'svelte';
-	import type * as L from 'leaflet';
+	let L: typeof import('leaflet');
 	import 'leaflet/dist/leaflet.css';
 	import axios from 'axios';
 	import postTSP from './TSP';
@@ -116,7 +116,7 @@
 
 	async function TSP_Backend(points: { lat: number; lng: number }[], matriz: number[][]) {
 		try {
-			const response = await axios.post('/solve-tsp', { points, matriz });
+			const response = await axios.post('/api/solve-tsp', { points, matriz });
 
 			const data = response.data;
 			console.log('Received data from backend:', data);
@@ -191,9 +191,17 @@
     }
 </script>
 
+
 <div
 	class="flex min-h-screen flex-col items-center bg-gradient-to-br from-[#e0eec6] to-[#7ca982] p-8 text-black"
 >
+
+<button
+  on:click={volverAlMenu}
+  class="mt-8 bg-white text-indigo-700 font-semibold py-2 px-6 rounded-full shadow-md hover:bg-indigo-200 transition"
+>
+  ⬅ Volver al Menú
+</button>
 	<h1 class="titulo">Problema del Viajante de Comercio (TSP)</h1>
 	<div
 		class="flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row md:items-start"
