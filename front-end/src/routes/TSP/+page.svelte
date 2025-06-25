@@ -5,6 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import axios from 'axios';
 	import postTSP from './TSP';
+	import { goto } from '$app/navigation';
 
 	const MAX_DOTS = 15;
 
@@ -184,6 +185,10 @@
 			cant_dots = 3;
 		}
 	}
+
+	 function volverAlMenu() {
+    goto('/Menu'); // Cambiá a '/menu' si renombrás
+    }
 </script>
 
 <div

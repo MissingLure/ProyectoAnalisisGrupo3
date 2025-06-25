@@ -5,7 +5,7 @@ import axios from "../APIs/axiosInstance"
  */
 const postCgrafo = async (values) => {
     try {
-        const response = await axios.post('/cgrafo',values);
+        const response = await axios.post('/api/cgrafo',values);
         return response.data;
     } catch (error) {
         console.error("Error fetching colores:", error);
@@ -18,7 +18,7 @@ const postCgrafo = async (values) => {
  */
 const postCgrafoPropio = async (values) => {
     try {
-        const response = await axios.post('/cgrafo',values);
+        const response = await axios.post('/api/cgrafo',values);
         return response.data;
     } catch (error) {
         console.error("Error fetching colores:", error);

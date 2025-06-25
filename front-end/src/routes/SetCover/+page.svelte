@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import axios from 'axios';
+	import { goto } from '$app/navigation';
 
 	type GrupoSet = {
 		indice: number;
@@ -61,6 +62,10 @@
 			errores.push('No se pudo conectar al servidor.');
 		}
 	}
+
+	 function volverAlMenu() {
+    goto('/Menu'); // Cambiá a '/menu' si renombrás
+  }
 </script>
 
 <svelte:head>
@@ -73,6 +78,12 @@
 <main
 	class="flex min-h-screen flex-col items-start gap-10 bg-gradient-to-br from-indigo-100 via-white to-cyan-100 px-4 py-12 md:flex-row md:items-start"
 >
+<button
+  on:click={volverAlMenu}
+  class="mt-8 bg-white text-indigo-700 font-semibold py-2 px-6 rounded-full shadow-md hover:bg-indigo-200 transition"
+>
+  ⬅ Volver al Menú
+</button>
 	<!-- Panel de entrada -->
 	<div
 		class="w-full max-w-md overflow-y-auto rounded-3xl border border-indigo-200 bg-white p-8 shadow-2xl"

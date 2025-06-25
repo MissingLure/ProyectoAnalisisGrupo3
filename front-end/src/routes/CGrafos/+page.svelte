@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import cgrafo from '../../APIs/Cgrafos';
+  import { goto } from '$app/navigation';
+
 
   const examNames = [
     'Tipo A', 'Tipo B', 'Tipo C', 'Tipo D', 'Tipo E',
@@ -80,6 +82,10 @@
   };
 
   onMount(generarAula);
+
+  function volverAlMenu() {
+    goto('/Menu'); // Cambiá a '/menu' si renombrás
+    }
 </script>
 
 <style>
@@ -277,6 +283,12 @@
   }
 </style>
 
+<button
+  on:click={volverAlMenu}
+  class="mt-8 bg-white text-indigo-700 font-semibold py-2 px-6 rounded-full shadow-md hover:bg-indigo-200 transition"
+>
+  ⬅ Volver al Menú
+</button>
 <div class="classroom">
   <div class="blackboard">
     <div>Coloración de Grafos</div>

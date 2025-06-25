@@ -5,11 +5,23 @@
   let entrar = true;
 
   // Función para cada botón (por ahora solo logs, después le metés la navegación real)
-  function goTo(opcion: string) {
-    alert(`Elegiste: ${opcion}`); // Placeholder
-    // Ejemplo de navegación futura:
-    // goto('/set-cover')
+  import { goto } from '$app/navigation';
+
+function goTo(opcion: string) {
+  switch (opcion) {
+    case 'Set Cover':
+      goto('/SetCover');
+      break;
+    case 'Problema del Viajante de Comercio':
+      goto('/TSP');
+      break;
+    case 'Coloración de Grafos':
+      goto('/CGrafos');
+      break;
+    default:
+      goto('/Menu'); // O poné una ruta de error si querés
   }
+}
 </script>
 
 <div

@@ -1,13 +1,8 @@
-#include <cmath>
-#include "../CGrafos.hpp"
-#include "../Grafo.hpp"
-#include "../crow_all.h"
+#include "RutasCgrafos.h"
 
-void registrarRutas(crow::SimpleApp& app) {
-     CROW_ROUTE(app, "/")([]() {
-        return "Hello, Crow on Windows!";
-    });
-CROW_ROUTE(app, "/cgrafo").methods("POST"_method)
+void registrarRutasCGrafos(crow::SimpleApp& app) {
+    
+CROW_ROUTE(app, "/api/cgrafo").methods("POST"_method)
 ([](const crow::request& req) {
     auto body = crow::json::load(req.body);
     crow::json::wvalue res;
